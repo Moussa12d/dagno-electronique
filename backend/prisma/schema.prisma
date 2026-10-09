@@ -1,0 +1,210 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// UTILISATEURS
+// ============================================
+enum Role {
+  CLIENT
+  ADMIN
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  phone        String?
+  address      String?
+  city         String?  @default("Bamako")
+  role         Role     @default(CLIENT)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  orders        Order[]
+  repairTickets RepairTicket[]
+
+  @@map("users")
+}
+
+// ============================================
+// TELEPHONES
+// ============================================
+enum PhoneCondition {
+  NEW
+  REFURBISHED
+}
+
+model Brand {
+  id      String  @id @default(cuid())
+  name    String  @unique
+  slug    String  @unique
+  logoUrl String? @map("logo_url")
+
+  phones Phone[]
+
+  @@map("brands")
+}
+
+model Phone {
+  id             String         @id @default(cuid())
+  brandId        String         @map("brand_id")
+  model          String
+  storage        String?
+  color          String?
+  condition      PhoneCondition @default(NEW)
+  price          Int
+  stock          Int            @default(0)
+  description    String?
+  images         String[]       @default([])
+  warrantyMonths Int            @default(0) @map("warranty_months")
+  isActive       Boolean        @default(true) @map("is_active")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+
+  brand      Brand       @relation(fields: [brandId], references: [id])
+  orderItems OrderItem[]
+
+  @@index([brandId])
+  @@index([condition])
+  @@index([isActive])
+  @@map("phones")
+}
+
+// ============================================
+// ACCESSOIRES
+// ============================================
+model AccessoryCategory {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  slug        String      @unique
+  description String?
+  accessories Accessory[]
+
+  @@map("accessory_categories")
+}
+
+model Accessory {
+  id          String   @id @default(cuid())
+  categoryId  String   @map("category_id")
+  name        String
+  description String?
+  price       Int
+  stock       Int      @default(0)
+  images      String[] @default([])
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  category   AccessoryCategory @relation(fields: [categoryId], references: [id])
+  orderItems OrderItem[]
+
+  @@index([categoryId])
+  @@index([isActive])
+  @@map("accessories")
+}
+
+// ============================================
+// REPARATION
+// ============================================
+model RepairType {
+  id                String  @id @default(cuid())
+  name              String  @unique
+  slug              String  @unique
+  description       String?
+  basePrice         Int     @map("base_price")
+  estimatedDuration String? @map("estimated_duration")
+  imageUrl          String? @map("image_url")
+  isActive          Boolean @default(true) @map("is_active")
+
+  tickets RepairTicket[]
+
+  @@map("repair_types")
+}
+
+enum RepairStatus {
+  PENDING
+  DIAGNOSING
+  IN_PROGRESS
+  DONE
+  CANCELLED
+}
+
+model RepairTicket {
+  id            String       @id @default(cuid())
+  ticketNumber  String       @unique @map("ticket_number")
+  userId        String?      @map("user_id")
+  clientName    String       @map("client_name")
+  clientPhone   String       @map("client_phone")
+  phoneModel    String       @map("phone_model")
+  repairTypeId  String       @map("repair_type_id")
+  description   String?
+  status        RepairStatus @default(PENDING)
+  quotedPrice   Int?         @map("quoted_price")
+  appointmentAt DateTime?    @map("appointment_at")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  user       User?      @relation(fields: [userId], references: [id])
+  repairType RepairType @relation(fields: [repairTypeId], references: [id])
+
+  @@index([ticketNumber])
+  @@index([status])
+  @@map("repair_tickets")
+}
+
+// ============================================
+// COMMANDES (paiement à la livraison)
+// ============================================
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  DELIVERED
+  PAID_ON_DELIVERY
+  CANCELLED
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique @map("order_number")
+  userId          String?     @map("user_id")
+  customerName    String      @map("customer_name")
+  customerPhone   String      @map("customer_phone")
+  deliveryAddress String      @map("delivery_address")
+  city            String      @default("Bamako")
+  notes           String?
+  status          OrderStatus @default(PENDING)
+  total           Int
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  user  User?       @relation(fields: [userId], references: [id])
+  items OrderItem[]
+
+  @@index([orderNumber])
+  @@index([status])
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  orderId     String  @map("order_id")
+  phoneId     String? @map("phone_id")
+  accessoryId String? @map("accessory_id")
+  itemName    String  @map("item_name")
+  quantity    Int     @default(1)
+  unitPrice   Int     @map("unit_price")
+
+  order     Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  phone     Phone?     @relation(fields: [phoneId], references: [id])
+  accessory Accessory? @relation(fields: [accessoryId], references: [id])
+
+  @@map("order_items")
+}

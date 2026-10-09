@@ -1,0 +1,80 @@
+### Santé
+GET http://localhost:4000/api/v1/health
+
+### ========================================
+### AUTH
+### ========================================
+
+### Connexion admin
+POST http://localhost:4000/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@dagno.ml",
+  "password": "Admin@2026"
+}
+
+### Connexion client
+POST http://localhost:4000/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "client@dagno.ml",
+  "password": "Client@2026"
+}
+
+### ========================================
+### PUBLIC
+### ========================================
+
+### Marques
+GET http://localhost:4000/api/v1/brands
+
+### Téléphones
+GET http://localhost:4000/api/v1/phones
+
+### Accessoires
+GET http://localhost:4000/api/v1/accessories
+
+### Types de réparation
+GET http://localhost:4000/api/v1/repairs/types
+
+### ========================================
+### ADMIN (remplace TOKEN_ADMIN par le token obtenu plus haut)
+### ========================================
+
+### Liste admin des téléphones
+GET http://localhost:4000/api/v1/admin/phones
+Authorization: Bearer TOKEN_ADMIN
+
+### Créer un téléphone
+POST http://localhost:4000/api/v1/admin/phones
+Authorization: Bearer TOKEN_ADMIN
+Content-Type: application/json
+
+{
+  "brandId": "REMPLACE_PAR_UN_ID_DE_MARQUE",
+  "model": "iPhone 16 Pro",
+  "storage": "256 Go",
+  "color": "Titane noir",
+  "condition": "NEW",
+  "price": 1250000,
+  "stock": 2,
+  "description": "Nouveau modèle 2026, scellé.",
+  "warrantyMonths": 12
+}
+
+### Liste admin des tickets de réparation
+GET http://localhost:4000/api/v1/admin/repairs/tickets
+Authorization: Bearer TOKEN_ADMIN
+### Upload d'une image (nécessite TOKEN_ADMIN)
+POST http://localhost:4000/api/v1/admin/uploads
+Authorization: Bearer TOKEN_ADMIN
+Content-Type: multipart/form-data; boundary=----Boundary
+
+------Boundary
+Content-Disposition: form-data; name="file"; filename="test.jpg"
+Content-Type: image/jpeg
+
+< C:\Users\Admin\Desktop\test.jpg
+------Boundary--
