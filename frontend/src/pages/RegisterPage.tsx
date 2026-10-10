@@ -12,7 +12,6 @@ export function RegisterPage() {
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
-    email: "",
     phone: "",
     address: "",
     password: "",
@@ -33,19 +32,22 @@ export function RegisterPage() {
       setError("Le mot de passe doit contenir au moins 6 caractères.");
       return;
     }
+    if (form.phone.trim().length < 8) {
+      setError("Numéro de téléphone invalide.");
+      return;
+    }
 
     setLoading(true);
     try {
-      await api.post("/auth/register", {
-        email: form.email,
+      const { data } = await api.post("/auth/register", {
         password: form.password,
         firstName: form.firstName,
         lastName: form.lastName,
         phone: form.phone,
         address: form.address,
       });
-      // Connexion automatique après inscription
-      await login(form.email, form.password);
+      // Connexion automatique avec l'email généré côté backend
+      await login(data.data.user.email, form.password);
       navigate("/mon-compte");
     } catch (err: any) {
       setError(
@@ -57,14 +59,14 @@ export function RegisterPage() {
   }
 
   return (
-    <div className="max-w-md mx-auto px-4 py-16">
+    <div className="max-w-md mx-auto px-4 py-12 sm:py-16">
       <h1 className="font-display text-2xl text-dagno-ink">Créer un compte</h1>
       <p className="mt-1 text-sm text-dagno-inkSoft">
         Suivez vos commandes et vos réparations en un seul endroit.
       </p>
 
       <form onSubmit={onSubmit} className="mt-8 space-y-4">
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Input
             label="Prénom"
             name="firstName"
@@ -80,34 +82,37 @@ export function RegisterPage() {
             onChange={(e) => setForm({ ...form, lastName: e.target.value })}
           />
         </div>
-        <Input
-          label="Email"
-          type="email"
-          required
-          value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-        />
+
         <Input
           label="Téléphone"
-          placeholder="+223 ..."
+          name="phone"
+          type="tel"
+          required
+          placeholder="+223 70 00 00 00"
           value={form.phone}
           onChange={(e) => setForm({ ...form, phone: e.target.value })}
         />
+
         <Input
-          label="Adresse"
+          label="Adresse (facultatif)"
+          name="address"
           placeholder="Quartier, rue..."
           value={form.address}
           onChange={(e) => setForm({ ...form, address: e.target.value })}
         />
+
         <Input
           label="Mot de passe"
+          name="password"
           type="password"
           required
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
+
         <Input
           label="Confirmer le mot de passe"
+          name="confirm"
           type="password"
           required
           value={form.confirm}

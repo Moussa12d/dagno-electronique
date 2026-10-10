@@ -9,11 +9,11 @@ import { env } from "../config/env.js";
 export const authRoutes = Router();
 
 const registerSchema = z.object({
-  email: z.string().email("Email invalide"),
+  email: z.string().email("Email invalide").optional(),
   password: z.string().min(6, "Mot de passe : 6 caractères minimum"),
   firstName: z.string().min(1),
   lastName: z.string().min(1),
-  phone: z.string().optional(),
+  phone: z.string().min(8, "Numéro de téléphone requis"),
   address: z.string().optional(),
 });
 
@@ -21,18 +21,22 @@ authRoutes.post("/register", async (req, res, next) => {
   try {
     const data = registerSchema.parse(req.body);
 
+    const email = data.email
+      ? data.email.toLowerCase()
+      : `${data.phone.replace(/\D/g, "")}@dagno.local`;
+
     const existing = await prisma.user.findUnique({
-      where: { email: data.email.toLowerCase() },
+      where: { email },
     });
     if (existing) {
-      throw new AppError("Un compte existe déjà avec cet email", 409);
+      throw new AppError("Un compte existe déjà avec ce numéro", 409);
     }
 
     const passwordHash = await bcrypt.hash(data.password, 10);
 
     const user = await prisma.user.create({
       data: {
-        email: data.email.toLowerCase(),
+        email,
         passwordHash,
         firstName: data.firstName,
         lastName: data.lastName,
@@ -61,7 +65,7 @@ authRoutes.post("/register", async (req, res, next) => {
 });
 
 const loginSchema = z.object({
-  email: z.string().email(),
+  identifier: z.string().min(1, "Email ou téléphone requis"),
   password: z.string().min(1),
 });
 
@@ -69,16 +73,25 @@ authRoutes.post("/login", async (req, res, next) => {
   try {
     const data = loginSchema.parse(req.body);
 
-    const user = await prisma.user.findUnique({
-      where: { email: data.email.toLowerCase() },
-    });
+    const identifier = data.identifier.trim().toLowerCase();
+    const isEmail = identifier.includes("@");
+
+    let user;
+    if (isEmail) {
+      user = await prisma.user.findUnique({ where: { email: identifier } });
+    } else {
+      user = await prisma.user.findFirst({
+        where: { phone: { contains: identifier.replace(/\s/g, "") } },
+      });
+    }
+
     if (!user) {
-      throw new AppError("Email ou mot de passe incorrect", 401);
+      throw new AppError("Identifiants incorrects", 401);
     }
 
     const ok = await bcrypt.compare(data.password, user.passwordHash);
     if (!ok) {
-      throw new AppError("Email ou mot de passe incorrect", 401);
+      throw new AppError("Identifiants incorrects", 401);
     }
 
     const accessToken = jwt.sign(

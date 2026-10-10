@@ -17,8 +17,8 @@ export const env = {
   jwt: {
     accessSecret: required("JWT_ACCESS_SECRET"),
     refreshSecret: required("JWT_REFRESH_SECRET"),
-    accessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN ?? "15m",
-    refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN ?? "7d",
+    accessExpiresIn: (process.env.JWT_ACCESS_EXPIRES_IN ?? "15m") as any,
+    refreshExpiresIn: (process.env.JWT_REFRESH_EXPIRES_IN ?? "7d") as any,
   },
   uploadDir: process.env.UPLOAD_DIR ?? "./uploads",
   corsOrigin: process.env.CORS_ORIGIN ?? "http://localhost:5173",

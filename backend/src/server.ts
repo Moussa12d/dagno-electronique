@@ -19,7 +19,12 @@ const app = express();
 
 // 1. Sécurité et parsing
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
-app.use(cors({ origin: env.corsOrigin, credentials: true }));
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
@@ -45,7 +50,8 @@ app.use("/api/v1/repairs", repairRoutes);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/orders", orderRoutes);
 app.use("/api/v1/me", meRoutes);
-// 5. 404 et gestion d'erreurs — TOUJOURS EN DERNIER
+
+// 5. 404 et gestion d'erreurs
 app.use(notFound);
 app.use(errorHandler);
 
