@@ -65,7 +65,7 @@ export function Header() {
               to="/connexion"
               className="hidden sm:inline-block text-sm font-medium text-dagno-inkSoft hover:text-dagno-ink"
             >
-              Connexion
+              Se connecter
             </Link>
           )}
 
@@ -162,7 +162,7 @@ export function Header() {
                   onClick={() => setMenuOpen(false)}
                   className="block px-3 py-2 text-sm font-medium text-dagno-inkSoft"
                 >
-                  Connexion
+                  Se connecter
                 </Link>
               )}
             </div>

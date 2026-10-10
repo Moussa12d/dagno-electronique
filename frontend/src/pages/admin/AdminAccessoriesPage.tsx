@@ -4,6 +4,7 @@ import { api } from "../../api/client";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { formatFCFA } from "../../utils/format";
+import { UPLOADS_URL } from "../../api/client";
 import type { Accessory, AccessoryCategory } from "../../types";
 
 async function fetchAccessories(): Promise<Accessory[]> {
@@ -78,6 +79,7 @@ export function AdminAccessoriesPage() {
           <table className="w-full text-sm">
             <thead className="bg-dagno-bg text-dagno-inkSoft text-left">
               <tr>
+                <th className="px-4 py-2 font-medium">Image</th>
                 <th className="px-4 py-2 font-medium">Nom</th>
                 <th className="px-4 py-2 font-medium">Catégorie</th>
                 <th className="px-4 py-2 font-medium text-right">Prix</th>
@@ -88,6 +90,21 @@ export function AdminAccessoriesPage() {
             <tbody>
               {accessories.map((a) => (
                 <tr key={a.id} className="border-t border-dagno-border">
+                  <td className="px-4 py-2">
+                    <div className="w-10 h-10 rounded bg-dagno-bg border border-dagno-border grid place-items-center overflow-hidden">
+                      {a.images[0] ? (
+                        <img
+                          src={`${UPLOADS_URL}${a.images[0]}`}
+                          alt={a.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-[10px] text-dagno-inkSoft">
+                          —
+                        </span>
+                      )}
+                    </div>
+                  </td>
                   <td className="px-4 py-3 font-medium text-dagno-ink">
                     {a.name}
                   </td>
@@ -123,7 +140,7 @@ export function AdminAccessoriesPage() {
               {accessories.length === 0 && (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="px-4 py-8 text-center text-dagno-inkSoft"
                   >
                     Aucun accessoire. Cliquez sur "Nouvel accessoire".
@@ -156,8 +173,27 @@ function AccessoryForm({
     price: accessory?.price ?? 0,
     stock: accessory?.stock ?? 0,
   });
+  const [imageUrl, setImageUrl] = useState(accessory?.images[0] ?? "");
+  const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  async function uploadImage(file: File) {
+    setUploading(true);
+    setError(null);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const { data } = await api.post("/admin/uploads", fd, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setImageUrl(data.data.url);
+    } catch {
+      setError("Erreur lors de l'upload de l'image.");
+    } finally {
+      setUploading(false);
+    }
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -168,6 +204,7 @@ function AccessoryForm({
         ...form,
         price: Number(form.price),
         stock: Number(form.stock),
+        images: imageUrl ? [imageUrl] : [],
       };
       if (accessory) {
         await api.patch(`/admin/accessories/${accessory.id}`, payload);
@@ -234,6 +271,32 @@ function AccessoryForm({
             className="mt-1 w-full px-3 py-2 rounded border border-dagno-border bg-white text-sm focus:border-dagno-blue focus:outline-none"
           />
         </div>
+
+        <div className="md:col-span-2">
+          <label className="text-sm font-medium text-dagno-ink">Image</label>
+          <div className="mt-1 flex items-center gap-3">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) uploadImage(f);
+              }}
+              className="text-sm"
+            />
+            {uploading && (
+              <span className="text-xs text-dagno-inkSoft">Upload...</span>
+            )}
+            {imageUrl && (
+              <img
+                src={`${UPLOADS_URL}${imageUrl}`}
+                alt=""
+                className="w-12 h-12 object-cover rounded border border-dagno-border"
+              />
+            )}
+          </div>
+        </div>
+
         {error && (
           <p className="md:col-span-2 text-sm text-dagno-danger">{error}</p>
         )}
