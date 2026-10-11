@@ -17,6 +17,8 @@ import { CartPage } from "./pages/CartPage";
 import { CheckoutPage } from "./pages/CheckoutPage";
 import { AccountPage } from "./pages/AccountPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { ConfidentialitePage } from "./pages/ConfidentialitePage";
+import { MentionsLegalesPage } from "./pages/MentionsLegalesPage";
 import { AdminDashboardPage } from "./pages/admin/DashboardPage";
 import { AdminPhonesPage } from "./pages/admin/AdminPhonesPage";
 import { AdminAccessoriesPage } from "./pages/admin/AdminAccessoriesPage";
@@ -39,7 +41,6 @@ export default function App() {
         <CartProvider>
           <BrowserRouter>
             <Routes>
-              {/* Site public */}
               <Route element={<Layout />}>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/telephones" element={<TelephonesPage />} />
@@ -52,10 +53,17 @@ export default function App() {
                 <Route path="/panier" element={<CartPage />} />
                 <Route path="/commande" element={<CheckoutPage />} />
                 <Route path="/mon-compte" element={<AccountPage />} />
+                <Route
+                  path="/confidentialite"
+                  element={<ConfidentialitePage />}
+                />
+                <Route
+                  path="/mentions-legales"
+                  element={<MentionsLegalesPage />}
+                />
                 <Route path="*" element={<NotFoundPage />} />
               </Route>
 
-              {/* Espace admin */}
               <Route element={<RequireAdmin />}>
                 <Route element={<AdminLayout />}>
                   <Route path="/admin" element={<AdminDashboardPage />} />

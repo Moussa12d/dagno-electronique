@@ -6,7 +6,7 @@ import { formatFCFA } from "../utils/format";
 import { UPLOADS_URL } from "../api/client";
 
 export function HomePage() {
-  const { data: phones } = usePhones({ limit: 6, inStock: true });
+  const { data: phones } = usePhones({ limit: 12, inStock: true });
   const { data: repairTypes } = useRepairTypes();
 
   return (
@@ -23,7 +23,7 @@ export function HomePage() {
             </h1>
             <p className="mt-5 text-dagno-inkSoft max-w-lg">
               Neufs et reconditionnés, toutes marques. Réparation rapide,
-              devis gratuit, garantie DAGNO ELECTRONIQUE.
+              diagnostic en boutique, garantie DAGNO ELECTRONIQUE.
             </p>
 
             <div className="mt-7 flex flex-wrap gap-3">
@@ -84,7 +84,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* CATEGORIES */}
+      {/* 3 CATEGORIES */}
       <section className="max-w-6xl mx-auto px-4 py-12">
         <div className="grid gap-4 md:grid-cols-3">
           <Link
@@ -125,8 +125,7 @@ export function HomePage() {
               Réparation
             </p>
             <p className="mt-2 text-sm text-dagno-inkSoft">
-              Écran, batterie, connecteur, désoxydation. Devis gratuit en
-              boutique.
+              Écran, batterie, connecteur, désoxydation. Diagnostic en boutique.
             </p>
             <p className="mt-4 text-sm text-dagno-blue font-medium group-hover:underline">
               Demander un devis →
@@ -135,11 +134,11 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* TELEPHONES POPULAIRES */}
+      {/* TELEPHONES EN STOCK — CARROUSEL INFINI */}
       {phones && phones.data.length > 0 && (
-        <section className="bg-white border-y border-dagno-border">
-          <div className="max-w-6xl mx-auto px-4 py-12">
-            <div className="flex items-end justify-between gap-4">
+        <section className="bg-white border-y border-dagno-border py-12 overflow-hidden">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="flex items-end justify-between gap-4 mb-6">
               <div>
                 <h2 className="font-display text-2xl text-dagno-ink">
                   En stock maintenant
@@ -150,62 +149,77 @@ export function HomePage() {
               </div>
               <Link
                 to="/telephones"
-                className="text-sm text-dagno-blue hover:underline whitespace-nowrap"
+                className="text-sm text-dagno-blue hover:underline whitespace-nowrap hidden sm:inline"
               >
                 Voir tout →
               </Link>
             </div>
+          </div>
 
-            <div className="mt-6 grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-              {phones.data.slice(0, 6).map((p) => (
-                <Link
-                  key={p.id}
-                  to={`/telephones/${p.id}`}
-                  className="group bg-white border border-dagno-border rounded-md overflow-hidden hover:border-dagno-blue/40 transition-colors"
-                >
-                  <div className="aspect-square bg-dagno-bg grid place-items-center overflow-hidden">
-                    {p.images[0] ? (
-                      <img
-                        src={`${UPLOADS_URL}${p.images[0]}`}
-                        alt={`${p.brand.name} ${p.model}`}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      />
-                    ) : (
-                      <span className="text-xs text-dagno-inkSoft/60 px-2 text-center">
-                        {p.brand.name} {p.model}
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <p className="text-xs text-dagno-inkSoft">{p.brand.name}</p>
-                    <p className="text-sm font-medium text-dagno-ink line-clamp-1">
-                      {p.model}
-                    </p>
-                    <p className="mt-1 font-display font-semibold text-sm">
-                      {formatFCFA(p.price)}
-                    </p>
-                  </div>
-                </Link>
-              ))}
-            </div>
+          <div className="marquee">
+            {[0, 1].map((copy) => (
+              <div className="marquee__track" key={copy} aria-hidden={copy === 1}>
+                {phones.data.map((p) => (
+                  <Link
+                    key={`${copy}-${p.id}`}
+                    to={`/telephones/${p.id}`}
+                    className="group bg-white border border-dagno-border rounded-md overflow-hidden hover:border-dagno-blue/40 transition-colors w-[180px] sm:w-[200px] shrink-0"
+                  >
+                    <div className="aspect-square bg-dagno-bg grid place-items-center overflow-hidden">
+                      {p.images[0] ? (
+                        <img
+                          src={`${UPLOADS_URL}${p.images[0]}`}
+                          alt={`${p.brand.name} ${p.model}`}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <span className="text-xs text-dagno-inkSoft/60 px-2 text-center">
+                          {p.brand.name} {p.model}
+                        </span>
+                      )}
+                    </div>
+                    <div className="p-3">
+                      <p className="text-xs text-dagno-inkSoft">
+                        {p.brand.name}
+                      </p>
+                      <p className="text-sm font-medium text-dagno-ink line-clamp-1">
+                        {p.model}
+                      </p>
+                      <p className="mt-1 font-display font-semibold text-sm">
+                        {formatFCFA(p.price)}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ))}
+          </div>
+
+          <div className="max-w-6xl mx-auto px-4 mt-6 sm:hidden">
+            <Link to="/telephones">
+              <Button variant="secondary" className="w-full">
+                Voir tout le catalogue
+              </Button>
+            </Link>
           </div>
         </section>
       )}
 
-      {/* REPARATIONS */}
+      {/* REPARATION */}
       <section className="max-w-6xl mx-auto px-4 py-12">
         <div className="grid gap-8 md:grid-cols-2 md:items-center">
           <div>
             <h2 className="font-display text-2xl text-dagno-ink">
-              Réparation rapide, prix clairs.
+              Réparation rapide, devis après examen.
             </h2>
             <p className="mt-3 text-sm text-dagno-inkSoft max-w-lg">
-              Diagnostic gratuit. Vous recevez un numéro de ticket, puis vous
-              pouvez suivre l'avancement en ligne. Aucun frais si vous refusez
-              le devis.
+              Apportez votre téléphone en boutique. Nous l'examinons, puis nous
+              vous communiquons le prix exact. Vous suivez l'avancement en
+              ligne par numéro de ticket. Aucun frais si vous refusez le devis.
             </p>
             <Link to="/reparation" className="mt-6 inline-block">
-              <Button>Demander un devis gratuit</Button>
+              <Button>Demander un devis</Button>
             </Link>
           </div>
 
@@ -214,9 +228,8 @@ export function HomePage() {
               <table className="w-full text-sm">
                 <thead className="bg-dagno-bg text-dagno-inkSoft text-left">
                   <tr>
-                    <th className="px-4 py-2 font-medium">Intervention</th>
-                    <th className="px-4 py-2 font-medium text-right">
-                      À partir de
+                    <th className="px-4 py-2 font-medium">
+                      Interventions proposées
                     </th>
                   </tr>
                 </thead>
@@ -224,13 +237,13 @@ export function HomePage() {
                   {repairTypes.slice(0, 5).map((t) => (
                     <tr key={t.id} className="border-t border-dagno-border">
                       <td className="px-4 py-3 text-dagno-ink">{t.name}</td>
-                      <td className="px-4 py-3 text-right font-display font-semibold">
-                        {formatFCFA(t.basePrice)}
-                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+              <div className="px-4 py-3 border-t border-dagno-border bg-dagno-bg text-xs text-dagno-inkSoft">
+                Prix communiqué après examen en boutique.
+              </div>
             </div>
           )}
         </div>
@@ -264,12 +277,15 @@ export function HomePage() {
               Téléphone
             </p>
             <p className="mt-2 text-sm text-dagno-inkSoft">
-              <a href="tel:+22394432539" className="hover:text-dagno-ink">
-                +223 94 43 25 39
-              </a>
-              <br />
               <a href="tel:+22364707523" className="hover:text-dagno-ink">
                 +223 64 70 75 23
+              </a>
+              <br />
+              <a
+                href="mailto:oumardagnon94@gmail.com"
+                className="hover:text-dagno-ink"
+              >
+                oumardagnon94@gmail.com
               </a>
             </p>
           </div>

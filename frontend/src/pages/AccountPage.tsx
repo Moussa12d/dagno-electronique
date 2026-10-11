@@ -1,9 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Navigate } from "react-router-dom";
 import { api } from "../api/client";
 import { useAuth } from "../hooks/useAuth";
 import { Badge } from "../components/ui/Badge";
+import { Button } from "../components/ui/Button";
 import { formatFCFA, formatDate } from "../utils/format";
+import { useState } from "react";
 
 interface Order {
   id: string;
@@ -28,7 +30,7 @@ const ORDER_STATUS: Record<string, { label: string; tone: any }> = {
   PENDING: { label: "En attente", tone: "gray" },
   CONFIRMED: { label: "Confirmée", tone: "blue" },
   DELIVERED: { label: "Livrée", tone: "orange" },
-  PAID_ON_DELIVERY: { label: "Payée", tone: "green" },
+  PAID_ON_DELIVERY: { label: "Confirmée par vous", tone: "green" },
   CANCELLED: { label: "Annulée", tone: "red" },
 };
 
@@ -42,6 +44,8 @@ const REPAIR_STATUS: Record<string, string> = {
 
 export function AccountPage() {
   const { user, logout } = useAuth();
+  const qc = useQueryClient();
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
 
   const { data: orders } = useQuery({
     queryKey: ["my-orders"],
@@ -61,6 +65,28 @@ export function AccountPage() {
     enabled: !!user,
   });
 
+  async function confirmReceipt(orderId: string) {
+    if (
+      !confirm(
+        "Confirmez-vous avoir reçu cette commande et l'avoir payée à la livraison ?"
+      )
+    )
+      return;
+
+    setConfirmingId(orderId);
+    try {
+      await api.patch(`/orders/me/${orderId}/confirm-receipt`);
+      qc.invalidateQueries({ queryKey: ["my-orders"] });
+    } catch (err: any) {
+      alert(
+        err.response?.data?.error ??
+          "Erreur lors de la confirmation de la commande."
+      );
+    } finally {
+      setConfirmingId(null);
+    }
+  }
+
   if (!user) return <Navigate to="/connexion?redirect=/mon-compte" replace />;
 
   return (
@@ -69,7 +95,7 @@ export function AccountPage() {
         <div>
           <h1 className="font-display text-2xl text-dagno-ink">Mon compte</h1>
           <p className="mt-1 text-sm text-dagno-inkSoft">
-            {user.firstName} {user.lastName} · {user.email}
+            {user.firstName} {user.lastName}
           </p>
         </div>
         <button
@@ -93,6 +119,8 @@ export function AccountPage() {
                 label: o.status,
                 tone: "gray",
               };
+              const canConfirm =
+                o.status === "CONFIRMED" || o.status === "DELIVERED";
               return (
                 <div
                   key={o.id}
@@ -121,9 +149,19 @@ export function AccountPage() {
                       </li>
                     ))}
                   </ul>
-                  <div className="mt-3 pt-3 border-t border-dagno-border flex justify-between font-display font-semibold">
-                    <span>Total</span>
-                    <span>{formatFCFA(o.total)}</span>
+                  <div className="mt-3 pt-3 border-t border-dagno-border flex flex-wrap justify-between items-center gap-3">
+                    <span className="font-display font-semibold">
+                      Total : {formatFCFA(o.total)}
+                    </span>
+                    {canConfirm && (
+                      <Button
+                        size="sm"
+                        onClick={() => confirmReceipt(o.id)}
+                        loading={confirmingId === o.id}
+                      >
+                        J'ai reçu ma commande
+                      </Button>
+                    )}
                   </div>
                 </div>
               );
@@ -162,7 +200,13 @@ export function AccountPage() {
                       {REPAIR_STATUS[t.status] ?? t.status}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      {t.quotedPrice != null ? formatFCFA(t.quotedPrice) : "—"}
+                      {t.quotedPrice != null ? (
+                        formatFCFA(t.quotedPrice)
+                      ) : (
+                        <span className="text-xs text-dagno-inkSoft">
+                          Après examen
+                        </span>
+                      )}
                     </td>
                   </tr>
                 ))}

@@ -3,6 +3,7 @@ import { api } from "../api/client";
 import { useRepairTypes } from "../api/hooks";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
+import { Badge } from "../components/ui/Badge";
 import { formatFCFA } from "../utils/format";
 
 export function ReparationPage() {
@@ -60,18 +61,54 @@ export function ReparationPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="font-display text-2xl md:text-3xl text-dagno-ink">
-        Réparation
-      </h1>
-      <p className="mt-1 text-sm text-dagno-inkSoft max-w-2xl">
-        Diagnostic gratuit en boutique. Devis confirmé avant intervention.
-        Aucun frais si vous refusez le devis.
-      </p>
+    <div className="max-w-6xl mx-auto px-4 py-12">
+      <div className="border-b border-dagno-border pb-10 max-w-3xl">
+        <p className="text-xs uppercase tracking-wide text-dagno-inkSoft">
+          Service réparation
+        </p>
+        <h1 className="mt-3 font-display text-4xl md:text-5xl text-dagno-ink">
+          Réparation rapide,
+          <br />
+          <span className="text-dagno-blue">devis après examen.</span>
+        </h1>
+        <p className="mt-5 text-dagno-inkSoft leading-relaxed">
+          Le diagnostic se fait <strong className="text-dagno-ink">uniquement en boutique</strong>.
+          Vous recevez votre numéro de ticket, puis le prix exact vous est
+          communiqué après examen de votre téléphone. Aucun frais si vous
+          refusez le devis.
+        </p>
 
-      <div className="mt-8 grid gap-8 md:grid-cols-[1fr_400px]">
+        <div className="mt-8 grid gap-4 sm:grid-cols-3">
+          <div className="border-l-2 border-dagno-blue pl-4">
+            <p className="text-xs text-dagno-inkSoft">01</p>
+            <p className="mt-1 font-medium text-dagno-ink">
+              Apportez le téléphone
+            </p>
+          </div>
+          <div className="border-l-2 border-dagno-blue pl-4">
+            <p className="text-xs text-dagno-inkSoft">02</p>
+            <p className="mt-1 font-medium text-dagno-ink">
+              Examen en boutique
+            </p>
+          </div>
+          <div className="border-l-2 border-dagno-blue pl-4">
+            <p className="text-xs text-dagno-inkSoft">03</p>
+            <p className="mt-1 font-medium text-dagno-ink">
+              Devis, réparation, garantie
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-12 grid gap-10 md:grid-cols-[1fr_400px]">
         <section>
-          <h2 className="font-display text-lg mb-3">Types de réparation</h2>
+          <h2 className="font-display text-2xl mb-5">
+            Types d'intervention
+          </h2>
+          <p className="text-sm text-dagno-inkSoft mb-5">
+            Le prix est communiqué après examen. Les délais dépendent de la
+            disponibilité des pièces.
+          </p>
           {isLoading && (
             <p className="text-sm text-dagno-inkSoft">Chargement...</p>
           )}
@@ -80,29 +117,19 @@ export function ReparationPage() {
               <table className="w-full text-sm">
                 <thead className="bg-dagno-bg text-dagno-inkSoft text-left">
                   <tr>
-                    <th className="px-4 py-2 font-medium">Intervention</th>
-                    <th className="px-4 py-2 font-medium">Délai</th>
-                    <th className="px-4 py-2 font-medium text-right">
-                      À partir de
-                    </th>
+                    <th className="px-5 py-3 font-medium">Intervention</th>
                   </tr>
                 </thead>
                 <tbody>
                   {types.map((t) => (
                     <tr key={t.id} className="border-t border-dagno-border">
-                      <td className="px-4 py-3">
+                      <td className="px-5 py-4">
                         <p className="font-medium text-dagno-ink">{t.name}</p>
                         {t.description && (
-                          <p className="text-xs text-dagno-inkSoft mt-0.5">
+                          <p className="text-xs text-dagno-inkSoft mt-1">
                             {t.description}
                           </p>
                         )}
-                      </td>
-                      <td className="px-4 py-3 text-dagno-inkSoft">
-                        {t.estimatedDuration ?? "—"}
-                      </td>
-                      <td className="px-4 py-3 text-right font-display font-semibold">
-                        {formatFCFA(t.basePrice)}
                       </td>
                     </tr>
                   ))}
@@ -112,23 +139,28 @@ export function ReparationPage() {
           )}
         </section>
 
-        <aside className="space-y-8">
-          <div className="bg-white border border-dagno-border rounded-md shadow-card p-5">
-            <h2 className="font-display text-lg">Demande de devis</h2>
+        <aside className="space-y-6">
+          <div className="bg-white border border-dagno-border rounded-md shadow-card p-6">
+            <h2 className="font-display text-xl">Demande de devis</h2>
+            <p className="mt-1 text-xs text-dagno-inkSoft">
+              Vous recevrez un numéro de ticket pour suivre l'avancement.
+            </p>
+
             {ticket ? (
-              <div className="mt-4 p-4 rounded border border-dagno-success/30 bg-green-50">
+              <div className="mt-5 p-5 rounded border border-dagno-success/30 bg-green-50">
                 <p className="text-sm text-dagno-ink">
                   Demande enregistrée. Conservez ce numéro :
                 </p>
-                <p className="mt-2 font-display font-bold text-dagno-success text-lg">
+                <p className="mt-3 font-display font-bold text-dagno-success text-xl">
                   {ticket.ticketNumber}
                 </p>
-                <p className="mt-2 text-xs text-dagno-inkSoft">
-                  Vous pouvez suivre l'avancement ci-dessous avec ce numéro.
+                <p className="mt-3 text-xs text-dagno-inkSoft">
+                  Passez en boutique avec votre téléphone. Le prix vous sera
+                  communiqué après examen.
                 </p>
               </div>
             ) : (
-              <form onSubmit={onSubmit} className="mt-4 space-y-3">
+              <form onSubmit={onSubmit} className="mt-5 space-y-3">
                 <Input
                   label="Nom complet"
                   name="clientName"
@@ -173,7 +205,7 @@ export function ReparationPage() {
                     <option value="">Choisir...</option>
                     {types?.map((t) => (
                       <option key={t.id} value={t.id}>
-                        {t.name} — à partir de {formatFCFA(t.basePrice)}
+                        {t.name}
                       </option>
                     ))}
                   </select>
@@ -191,9 +223,7 @@ export function ReparationPage() {
                     className="px-3 py-2 rounded border border-dagno-border bg-white text-sm focus:border-dagno-blue focus:outline-none"
                   />
                 </div>
-                {error && (
-                  <p className="text-xs text-dagno-danger">{error}</p>
-                )}
+                {error && <p className="text-xs text-dagno-danger">{error}</p>}
                 <Button type="submit" loading={submitting} className="w-full">
                   Envoyer la demande
                 </Button>
@@ -201,9 +231,9 @@ export function ReparationPage() {
             )}
           </div>
 
-          <div className="bg-white border border-dagno-border rounded-md shadow-card p-5">
-            <h2 className="font-display text-lg">Suivi de réparation</h2>
-            <form onSubmit={onTrack} className="mt-4 space-y-3">
+          <div className="bg-white border border-dagno-border rounded-md shadow-card p-6">
+            <h2 className="font-display text-xl">Suivre une réparation</h2>
+            <form onSubmit={onTrack} className="mt-5 space-y-3">
               <Input
                 label="Numéro de ticket"
                 name="trackNumber"
@@ -211,40 +241,40 @@ export function ReparationPage() {
                 value={trackNumber}
                 onChange={(e) => setTrackNumber(e.target.value)}
               />
-              <Button
-                type="submit"
-                variant="secondary"
-                className="w-full"
-              >
+              <Button type="submit" variant="secondary" className="w-full">
                 Vérifier le statut
               </Button>
             </form>
 
             {trackError && (
-              <p className="mt-3 text-xs text-dagno-danger">{trackError}</p>
+              <p className="mt-4 text-xs text-dagno-danger">{trackError}</p>
             )}
 
             {tracking && (
-              <div className="mt-4 p-3 rounded border border-dagno-border bg-dagno-bg text-sm">
-                <p className="font-medium text-dagno-ink">
+              <div className="mt-5 p-4 rounded border border-dagno-border bg-dagno-bg">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="font-mono text-xs text-dagno-inkSoft">
+                    {tracking.ticketNumber}
+                  </span>
+                  <Badge tone={tracking.status === "DONE" ? "green" : "orange"}>
+                    {statusLabel(tracking.status)}
+                  </Badge>
+                </div>
+                <p className="font-display text-lg text-dagno-ink">
                   {tracking.phoneModel}
                 </p>
                 <p className="text-xs text-dagno-inkSoft mt-1">
                   {tracking.repairType?.name}
                 </p>
-                <p className="mt-3 text-xs text-dagno-inkSoft">Statut</p>
-                <p className="font-display font-semibold text-dagno-ink">
-                  {statusLabel(tracking.status)}
-                </p>
                 {tracking.quotedPrice != null && (
-                  <>
-                    <p className="mt-3 text-xs text-dagno-inkSoft">
+                  <div className="mt-4 pt-4 border-t border-dagno-border flex justify-between">
+                    <span className="text-xs text-dagno-inkSoft">
                       Prix devisé
-                    </p>
-                    <p className="font-display font-semibold text-dagno-ink">
+                    </span>
+                    <span className="font-display font-semibold text-dagno-ink">
                       {formatFCFA(tracking.quotedPrice)}
-                    </p>
-                  </>
+                    </span>
+                  </div>
                 )}
               </div>
             )}
@@ -258,7 +288,7 @@ export function ReparationPage() {
 function statusLabel(s: string): string {
   switch (s) {
     case "PENDING":
-      return "En attente de diagnostic";
+      return "En attente";
     case "DIAGNOSING":
       return "Diagnostic en cours";
     case "IN_PROGRESS":

@@ -11,7 +11,7 @@ export function Footer() {
           <p className="mt-2 text-sm text-dagno-inkSoft">
             Vente de téléphones, accessoires et réparation.
             <br />
-            Bamako, Mali.
+            Dravela-Bolibana, Bamako, Mali.
           </p>
         </div>
 
@@ -46,15 +46,30 @@ export function Footer() {
                 +223 64 70 75 23
               </a>
             </li>
+            <li>
+              <a
+                href="mailto:oumardagnon94@gmail.com"
+                className="hover:text-dagno-ink"
+              >
+                oumardagnon94@gmail.com
+              </a>
+            </li>
           </ul>
         </div>
 
         <div>
-          <p className="text-sm font-medium text-dagno-ink">Horaires</p>
+          <p className="text-sm font-medium text-dagno-ink">Informations</p>
           <ul className="mt-2 space-y-1 text-sm text-dagno-inkSoft">
-            <li>Lun – Ven : 8h – 20h</li>
-            <li>Samedi : 9h – 20h</li>
-            <li>Dimanche : fermé</li>
+            <li>
+              <Link to="/confidentialite" className="hover:text-dagno-ink">
+                Confidentialité
+              </Link>
+            </li>
+            <li>
+              <Link to="/mentions-legales" className="hover:text-dagno-ink">
+                Mentions légales
+              </Link>
+            </li>
           </ul>
         </div>
       </div>

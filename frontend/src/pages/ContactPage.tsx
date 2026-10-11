@@ -20,8 +20,8 @@ export function ContactPage() {
         <div className="bg-white border border-dagno-border rounded-md shadow-card p-5">
           <p className="font-display font-semibold">Téléphone</p>
           <p className="mt-2 text-sm text-dagno-inkSoft">
-            <a href="tel:+22394432539" className="hover:text-dagno-ink">
-              +223 94 43 25 39
+            <a href="tel:+22394472539" className="hover:text-dagno-ink">
+              +223 94 47 25 39
             </a>
             <br />
             <a href="tel:+22364707523" className="hover:text-dagno-ink">
