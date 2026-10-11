@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { usePhones, useRepairTypes } from "../api/hooks";
+import { usePhones, useRepairTypes, useFeaturedPhones } from "../api/hooks";
 import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 import { formatFCFA } from "../utils/format";
@@ -8,11 +8,12 @@ import { UPLOADS_URL } from "../api/client";
 export function HomePage() {
   const { data: phones } = usePhones({ limit: 12, inStock: true });
   const { data: repairTypes } = useRepairTypes();
+  const { data: featured } = useFeaturedPhones();
 
   return (
     <div>
       {/* HERO */}
-      <section className="bg-white border-b border-dagno-border">
+      <section className="bg-white border-b border-dagno-border overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 py-12 md:py-16 grid gap-8 md:grid-cols-2 md:items-center">
           <div>
             <Badge tone="blue">Bamako · Dravela-Bolibana</Badge>
@@ -59,28 +60,83 @@ export function HomePage() {
             </dl>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="aspect-square bg-dagno-blueLight rounded-md grid place-items-center">
-              <span className="font-display text-dagno-blueDark text-lg">
-                iPhone
-              </span>
+          {/* GRILLE DES PRODUITS PHARES ANIMÉE */}
+          {featured && featured.length > 0 ? (
+            <div className="grid grid-cols-2 gap-3">
+              {featured.slice(0, 4).map((p, index) => {
+                const isAlt = index === 1 || index === 3;
+                return (
+                  <Link
+                    key={p.id}
+                    to={`/telephones/${p.id}`}
+                    className={`hero-card hero-card-${index + 1} group relative bg-white border border-dagno-border rounded-md overflow-hidden hover:border-dagno-blue/40 hover:shadow-lg transition-all duration-300 ${
+                      isAlt ? "mt-6" : ""
+                    }`}
+                    style={{ animationFillMode: "forwards" }}
+                  >
+                    {/* Wrapper interne pour le flottement */}
+                    <div
+                      className={isAlt ? "hero-float-alt" : "hero-float"}
+                      style={{ animationDelay: `${index * 0.4}s` }}
+                    >
+                      <div className="aspect-square bg-dagno-bg grid place-items-center overflow-hidden">
+                        {p.images[0] ? (
+                          <img
+                            src={`${UPLOADS_URL}${p.images[0]}`}
+                            alt={`${p.brand.name} ${p.model}`}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          />
+                        ) : (
+                          <span className="font-display text-dagno-inkSoft text-lg">
+                            {p.brand.name}
+                          </span>
+                        )}
+                      </div>
+                      <div className="p-3">
+                        <p className="text-xs text-dagno-inkSoft">
+                          {p.brand.name}
+                        </p>
+                        <p className="text-sm font-medium text-dagno-ink line-clamp-1">
+                          {p.model}
+                        </p>
+                        <p className="mt-1 font-display font-semibold text-sm">
+                          {formatFCFA(p.price)}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Reflet lumineux qui traverse au survol */}
+                    <span className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="absolute top-0 left-[-100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:left-[200%] transition-all duration-1000 ease-out" />
+                    </span>
+                  </Link>
+                );
+              })}
             </div>
-            <div className="aspect-square bg-dagno-bg rounded-md grid place-items-center border border-dagno-border mt-8">
-              <span className="font-display text-dagno-inkSoft text-lg">
-                Samsung
-              </span>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              <div className="aspect-square bg-dagno-bg rounded-md grid place-items-center border border-dagno-border hero-float">
+                <span className="font-display text-dagno-inkSoft text-lg">
+                  Apple
+                </span>
+              </div>
+              <div className="aspect-square bg-dagno-bg rounded-md grid place-items-center border border-dagno-border mt-6 hero-float-alt">
+                <span className="font-display text-dagno-inkSoft text-lg">
+                  Samsung
+                </span>
+              </div>
+              <div className="aspect-square bg-dagno-bg rounded-md grid place-items-center border border-dagno-border hero-float">
+                <span className="font-display text-dagno-inkSoft text-lg">
+                  Xiaomi
+                </span>
+              </div>
+              <div className="aspect-square bg-dagno-bg rounded-md grid place-items-center border border-dagno-border mt-6 hero-float-alt">
+                <span className="font-display text-dagno-inkSoft text-lg">
+                  Tecno
+                </span>
+              </div>
             </div>
-            <div className="aspect-square bg-dagno-bg rounded-md grid place-items-center border border-dagno-border -mt-4">
-              <span className="font-display text-dagno-inkSoft text-lg">
-                Xiaomi
-              </span>
-            </div>
-            <div className="aspect-square bg-dagno-blueLight rounded-md grid place-items-center mt-4">
-              <span className="font-display text-dagno-blueDark text-lg">
-                Tecno
-              </span>
-            </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -158,7 +214,11 @@ export function HomePage() {
 
           <div className="marquee">
             {[0, 1].map((copy) => (
-              <div className="marquee__track" key={copy} aria-hidden={copy === 1}>
+              <div
+                className="marquee__track"
+                key={copy}
+                aria-hidden={copy === 1}
+              >
                 {phones.data.map((p) => (
                   <Link
                     key={`${copy}-${p.id}`}

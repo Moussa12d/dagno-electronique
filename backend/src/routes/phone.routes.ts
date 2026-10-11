@@ -71,6 +71,42 @@ phoneRoutes.get("/", async (req, res, next) => {
   }
 });
 
+// ============================================
+// Produits phares : le plus cher en stock par marque
+// ============================================
+phoneRoutes.get("/featured", async (_req, res, next) => {
+  try {
+    // Marques à mettre en avant dans le hero
+    const featuredBrandSlugs = ["apple", "samsung", "xiaomi", "tecno"];
+
+    const phones = await prisma.phone.findMany({
+      where: {
+        isActive: true,
+        stock: { gt: 0 },
+        brand: { slug: { in: featuredBrandSlugs } },
+      },
+      include: { brand: true },
+      orderBy: { price: "desc" },
+    });
+
+    // On garde le téléphone le plus cher par marque, dans l'ordre défini
+    const byBrand = new Map<string, typeof phones[number]>();
+    for (const phone of phones) {
+      if (!byBrand.has(phone.brand.slug)) {
+        byBrand.set(phone.brand.slug, phone);
+      }
+    }
+
+    const featured = featuredBrandSlugs
+      .map((slug) => byBrand.get(slug))
+      .filter((p): p is typeof phones[number] => p !== undefined);
+
+    res.json({ data: featured });
+  } catch (err) {
+    next(err);
+  }
+});
+
 phoneRoutes.get("/:id", async (req, res, next) => {
   try {
     const phone = await prisma.phone.findUnique({

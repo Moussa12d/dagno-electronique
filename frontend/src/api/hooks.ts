@@ -40,14 +40,18 @@ export function usePhones(filters: PhoneFilters = {}) {
       const params: Record<string, string> = {};
       if (filters.brand) params.brand = filters.brand;
       if (filters.condition) params.condition = filters.condition;
-      if (filters.minPrice !== undefined) params.minPrice = String(filters.minPrice);
-      if (filters.maxPrice !== undefined) params.maxPrice = String(filters.maxPrice);
+      if (filters.minPrice !== undefined)
+        params.minPrice = String(filters.minPrice);
+      if (filters.maxPrice !== undefined)
+        params.maxPrice = String(filters.maxPrice);
       if (filters.search) params.search = filters.search;
       if (filters.inStock) params.inStock = "true";
       if (filters.page) params.page = String(filters.page);
       if (filters.limit) params.limit = String(filters.limit);
 
-      const { data } = await api.get<ApiListResponse<Phone>>("/phones", { params });
+      const { data } = await api.get<ApiListResponse<Phone>>("/phones", {
+        params,
+      });
       return data;
     },
   });
@@ -59,6 +63,19 @@ export function usePhone(id: string | undefined) {
     enabled: !!id,
     queryFn: async () => {
       const { data } = await api.get<ApiItemResponse<Phone>>(`/phones/${id}`);
+      return data.data;
+    },
+  });
+}
+
+// ---------- Produits phares (pour le hero) ----------
+export function useFeaturedPhones() {
+  return useQuery({
+    queryKey: ["featured-phones"],
+    queryFn: async () => {
+      const { data } = await api.get<ApiItemResponse<Phone[]>>(
+        "/phones/featured"
+      );
       return data.data;
     },
   });
@@ -82,15 +99,18 @@ export function useAccessories(filters: AccessoryFilters = {}) {
       const params: Record<string, string> = {};
       if (filters.category) params.category = filters.category;
       if (filters.search) params.search = filters.search;
-      if (filters.minPrice !== undefined) params.minPrice = String(filters.minPrice);
-      if (filters.maxPrice !== undefined) params.maxPrice = String(filters.maxPrice);
+      if (filters.minPrice !== undefined)
+        params.minPrice = String(filters.minPrice);
+      if (filters.maxPrice !== undefined)
+        params.maxPrice = String(filters.maxPrice);
       if (filters.inStock) params.inStock = "true";
       if (filters.page) params.page = String(filters.page);
       if (filters.limit) params.limit = String(filters.limit);
 
-      const { data } = await api.get<ApiListResponse<Accessory>>("/accessories", {
-        params,
-      });
+      const { data } = await api.get<ApiListResponse<Accessory>>(
+        "/accessories",
+        { params }
+      );
       return data;
     },
   });

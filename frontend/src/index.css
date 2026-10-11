@@ -82,8 +82,78 @@
   }
 }
 
+/* ============================================ */
+/* ANIMATIONS DES CARTES DU HERO               */
+/* ============================================ */
+
+/* Entrée en cascade au chargement */
+@keyframes hero-card-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.hero-card {
+  opacity: 0;
+  animation: hero-card-enter 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: opacity, transform;
+}
+
+.hero-card-1 {
+  animation-delay: 0.05s;
+}
+.hero-card-2 {
+  animation-delay: 0.2s;
+}
+.hero-card-3 {
+  animation-delay: 0.35s;
+}
+.hero-card-4 {
+  animation-delay: 0.5s;
+}
+
+/* Flottement continu (après l'entrée) */
+@keyframes float-1 {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes float-2 {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.hero-float {
+  animation: float-1 6s ease-in-out infinite;
+}
+
+.hero-float-alt {
+  animation: float-2 7s ease-in-out infinite;
+}
+
+/* Respecte les préférences d'accessibilité */
 @media (prefers-reduced-motion: reduce) {
-  .marquee__track {
+  .marquee__track,
+  .hero-card,
+  .hero-float,
+  .hero-float-alt {
     animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
