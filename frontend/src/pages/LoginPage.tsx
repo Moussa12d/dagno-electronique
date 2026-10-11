@@ -11,7 +11,7 @@ export function LoginPage() {
   const [searchParams] = useSearchParams();
   const redirect = searchParams.get("redirect");
 
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -21,7 +21,7 @@ export function LoginPage() {
     setLoading(true);
     setError(null);
     try {
-      const user = await login(email, password);
+      const user = await login(identifier, password);
       if (redirect) {
         navigate(redirect);
       } else if (user.role === "ADMIN") {
@@ -31,7 +31,8 @@ export function LoginPage() {
       }
     } catch (err: any) {
       setError(
-        err.response?.data?.error ?? "Email ou mot de passe incorrect."
+        err.response?.data?.error ??
+          "Téléphone/email ou mot de passe incorrect."
       );
     } finally {
       setLoading(false);
@@ -39,7 +40,7 @@ export function LoginPage() {
   }
 
   return (
-    <div className="max-w-md mx-auto px-4 py-16">
+    <div className="max-w-md mx-auto px-4 py-12 sm:py-16">
       <h1 className="font-display text-2xl text-dagno-ink">Connexion</h1>
       <p className="mt-1 text-sm text-dagno-inkSoft">
         Accédez à votre compte DAGNO ELECTRONIQUE.
@@ -47,13 +48,14 @@ export function LoginPage() {
 
       <form onSubmit={onSubmit} className="mt-8 space-y-4">
         <Input
-          label="Email"
-          name="email"
-          type="email"
+          label="Téléphone ou email"
+          name="identifier"
+          type="text"
           required
-          autoComplete="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          autoComplete="username"
+          placeholder="+223 70 00 00 00"
+          value={identifier}
+          onChange={(e) => setIdentifier(e.target.value)}
         />
         <Input
           label="Mot de passe"
