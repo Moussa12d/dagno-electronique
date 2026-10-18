@@ -68,7 +68,7 @@ export function PhoneDetailPage() {
         <div>
           <div className="flex items-center gap-2 mb-3">
             <Badge tone={phone.condition === "NEW" ? "blue" : "orange"}>
-              {phone.condition === "NEW" ? "Neuf" : "Reconditionné"}
+              {phone.condition === "NEW" ? "Neuf" : "Arrivage"}
             </Badge>
             {outOfStock ? (
               <Badge tone="red">Rupture de stock</Badge>

@@ -26,5 +26,6 @@ api.interceptors.response.use(
   }
 );
 
-export const UPLOADS_URL =
-  import.meta.env.VITE_UPLOADS_URL ?? "http://localhost:4000";
+// Les URLs ImgBB sont complètes (https://i.ibb.co/...)
+// On n'a plus besoin de préfixe
+export const UPLOADS_URL = "";

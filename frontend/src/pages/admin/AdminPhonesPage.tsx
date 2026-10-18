@@ -100,7 +100,7 @@ export function AdminPhonesPage() {
                   </td>
                   <td className="px-4 py-3">
                     <Badge tone={p.condition === "NEW" ? "blue" : "orange"}>
-                      {p.condition === "NEW" ? "Neuf" : "Reconditionné"}
+                      {p.condition === "NEW" ? "Neuf" : "Arrivage"}
                     </Badge>
                   </td>
                   <td className="px-4 py-3 text-right">

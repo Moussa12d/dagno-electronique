@@ -46,7 +46,7 @@ export function TelephonesPage() {
             Téléphones
           </h1>
           <p className="mt-1 text-sm text-dagno-inkSoft">
-            Neufs et reconditionnés. Prix affichés en FCFA, garantie DAGNO.
+            Neufs et arrivages. Prix affichés en FCFA, garantie DAGNO.
           </p>
         </div>
 
@@ -127,7 +127,7 @@ export function TelephonesPage() {
                     : "bg-white text-dagno-inkSoft border-dagno-border hover:border-dagno-ink/30"
                 }`}
               >
-                Reconditionné
+                Arrivage
               </button>
             </div>
           </div>
@@ -211,7 +211,7 @@ function PhoneCard({ phone }: { phone: Phone }) {
         <div className="flex items-center justify-between gap-2">
           <span className="text-xs text-dagno-inkSoft">{phone.brand.name}</span>
           <Badge tone={phone.condition === "NEW" ? "blue" : "orange"}>
-            {phone.condition === "NEW" ? "Neuf" : "Reconditionné"}
+            {phone.condition === "NEW" ? "Neuf" : "Arrivage"}
           </Badge>
         </div>
         <p className="font-medium text-dagno-ink leading-tight">

@@ -1,0 +1,11 @@
+### Test santé
+GET http://localhost:4000/api/v1/health
+
+### Test login admin
+POST http://localhost:4000/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "identifier": "64707523",
+  "password": "6470Dagno"
+}

@@ -120,12 +120,15 @@ export function PhoneForm({ phone, brands, onSaved, onCancel }: Props) {
           <select
             value={form.condition}
             onChange={(e) =>
-              setForm({ ...form, condition: e.target.value as any })
+              setForm({
+                ...form,
+                condition: e.target.value as "NEW" | "REFURBISHED",
+              })
             }
             className="h-10 px-3 rounded border border-dagno-border bg-white text-sm focus:border-dagno-blue focus:outline-none"
           >
             <option value="NEW">Neuf</option>
-            <option value="REFURBISHED">Reconditionné</option>
+            <option value="REFURBISHED">Arrivage</option>
           </select>
         </div>
 
@@ -183,7 +186,7 @@ export function PhoneForm({ phone, brands, onSaved, onCancel }: Props) {
             )}
             {imageUrl && (
               <img
-                src={`${import.meta.env.VITE_UPLOADS_URL}${imageUrl}`}
+                src={imageUrl}
                 alt=""
                 className="w-12 h-12 object-cover rounded border border-dagno-border"
               />

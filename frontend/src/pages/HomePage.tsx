@@ -23,7 +23,7 @@ export function HomePage() {
               <span className="text-dagno-blue">au même endroit.</span>
             </h1>
             <p className="mt-5 text-dagno-inkSoft max-w-lg">
-              Neufs et reconditionnés, toutes marques. Réparation rapide,
+              Neufs et arrivages, toutes marques. Réparation rapide,
               diagnostic en boutique, garantie DAGNO ELECTRONIQUE.
             </p>
 
@@ -151,7 +151,7 @@ export function HomePage() {
               Téléphones
             </p>
             <p className="mt-2 text-sm text-dagno-inkSoft">
-              Apple, Samsung, Xiaomi, Tecno, Infinix — neufs et reconditionnés.
+              Apple, Samsung, Xiaomi, Tecno, Infinix — neufs et arrivages.
             </p>
             <p className="mt-4 text-sm text-dagno-blue font-medium group-hover:underline">
               Voir le catalogue →
