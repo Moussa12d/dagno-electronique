@@ -1,3 +1,33 @@
+services:
+  - type: web
+    name: dagno-backend
+    runtime: node
+    plan: free
+    region: frankfurt
+    rootDir: backend
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npx prisma migrate deploy && npm start
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_ACCESS_EXPIRES_IN
+        value: 30d
+      - key: JWT_REFRESH_EXPIRES_IN
+        value: 30d
+      - key: UPLOAD_DIR
+        value: ./uploads
+      - key: CORS_ORIGIN
+        value: https://dagno-frontend.onrender.com
+      - key: IMGBB_API_KEY
+        sync: false
+
   - type: web
     name: dagno-frontend
     runtime: static
