@@ -19,17 +19,15 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-dagno-border shadow-header">
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-        <Link to="/" className="flex items-center gap-2 shrink-0">
-          <span
-            aria-hidden
-            className="w-8 h-8 rounded bg-dagno-blue text-white grid place-items-center font-display font-bold"
-          >
-            D
-          </span>
-          <span className="font-display font-semibold text-dagno-ink tracking-tight hidden sm:inline">
-            DAGNO <span className="text-dagno-blue">ELECTRONIQUE</span>
-          </span>
+      <div className="max-w-6xl mx-auto px-4 min-h-[90px] flex items-center justify-between gap-4 py-2">
+        
+        {/* LOGO AGRANDI */}
+        <Link to="/" className="flex items-center shrink-0">
+          <img 
+            src="/logo.png" 
+            alt="DAGNO ELECTRONIQUE" 
+            className="h-20 w-auto object-contain"
+          />
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">

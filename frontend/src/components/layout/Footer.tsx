@@ -5,10 +5,13 @@ export function Footer() {
     <footer className="border-t border-dagno-border bg-white mt-16">
       <div className="max-w-6xl mx-auto px-4 py-10 grid gap-8 md:grid-cols-4">
         <div>
-          <p className="font-display font-semibold text-dagno-ink">
-            DAGNO ELECTRONIQUE
-          </p>
-          <p className="mt-2 text-sm text-dagno-inkSoft">
+          {/* Remplacer le bloc titre par le logo */}
+          <img 
+            src="/logo.png" 
+            alt="DAGNO ELECTRONIQUE" 
+            className="h-24 w-auto object-contain"
+          />
+          <p className="mt-4 text-sm text-dagno-inkSoft">
             Vente de téléphones, accessoires et réparation.
             <br />
             Dravela-Bolibana, Bamako, Mali.
