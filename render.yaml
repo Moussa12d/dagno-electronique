@@ -1,45 +1,10 @@
-services:
-  # ============================================
-  # 1. Backend (API Express + Prisma)
-  # ============================================
-  - type: web
-    name: dagno-backend
-    runtime: node
-    plan: free
-    region: frankfurt
-    rootDir: backend
-    # On installe, on génère Prisma, on compile TypeScript
-    buildCommand: npm install && npx prisma generate && npm run build
-    # On applique les migrations PUIS on lance le serveur
-    startCommand: npx prisma migrate deploy && npm start
-    healthCheckPath: /api/v1/health
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: DATABASE_URL
-        sync: false # À remplir sur Render avec la chaîne Neon
-      - key: JWT_ACCESS_SECRET
-        generateValue: true
-      - key: JWT_REFRESH_SECRET
-        generateValue: true
-      - key: JWT_ACCESS_EXPIRES_IN
-        value: 30d
-      - key: JWT_REFRESH_EXPIRES_IN
-        value: 30d
-      - key: UPLOAD_DIR
-        value: ./uploads
-      - key: CORS_ORIGIN
-        value: https://dagno-frontend.onrender.com # À ajuster après le déploiement
-      - key: IMGBB_API_KEY
-        sync: false # À remplir sur Render avec ta clé ImgBB
-
   # ============================================
   # 2. Frontend (React + Vite - Site Statique)
   # ============================================
   - type: web
     name: dagno-frontend
     runtime: static
-    plan: free
+    # plan: free  <-- SUPPRIME CETTE LIGNE
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
