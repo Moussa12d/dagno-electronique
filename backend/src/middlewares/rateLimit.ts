@@ -1,4 +1,4 @@
-import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import rateLimit from "express-rate-limit";
 import type { Request, Response, NextFunction } from "express";
 
 // Stockage en mémoire des IP bloquées : { ip: dateExpiration }
@@ -16,7 +16,7 @@ setInterval(() => {
 // Middleware qui bloque les IP déjà bloquées
 // ============================================
 export function checkBlocked(req: Request, res: Response, next: NextFunction) {
-  const ip = ipKeyGenerator(req.ip ?? "unknown");
+  const ip = req.ip ?? "unknown";
   const expiry = blockedIPs.get(ip);
 
   if (expiry && expiry > Date.now()) {
@@ -45,10 +45,10 @@ export const strictLimiter = rateLimit({
   statusCode: 429,
   standardHeaders: "draft-7",
   legacyHeaders: false,
-  keyGenerator: (req) => ipKeyGenerator(req.ip ?? "unknown"),
+  keyGenerator: (req) => req.ip ?? "unknown",
   skipSuccessfulRequests: true,
   handler: (req, res, _next, _options) => {
-    const ip = ipKeyGenerator(req.ip ?? "unknown");
+    const ip = req.ip ?? "unknown";
     blockedIPs.set(ip, Date.now() + 5 * 60 * 1000);
     res.status(429).json({
       error: "Trop de tentatives. Veuillez réessayer dans 5 minutes.",
@@ -69,5 +69,5 @@ export const publicLimiter = rateLimit({
   statusCode: 429,
   standardHeaders: "draft-7",
   legacyHeaders: false,
-  keyGenerator: (req) => ipKeyGenerator(req.ip ?? "unknown"),
+  keyGenerator: (req) => req.ip ?? "unknown",
 });
