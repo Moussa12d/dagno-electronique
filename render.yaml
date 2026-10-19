@@ -1,0 +1,57 @@
+services:
+  # ============================================
+  # 1. Backend (API Express + Prisma)
+  # ============================================
+  - type: web
+    name: dagno-backend
+    runtime: node
+    plan: free
+    region: frankfurt
+    rootDir: backend
+    # On installe, on génère Prisma, on compile TypeScript
+    buildCommand: npm install && npx prisma generate && npm run build
+    # On lance le serveur compilé
+    startCommand: npm start
+    # Prisma applique les migrations AVANT de lancer le serveur
+    preDeployCommand: npx prisma migrate deploy
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false # À remplir sur Render avec la chaîne Neon
+      - key: JWT_ACCESS_SECRET
+        generateValue: true # Render génère un secret aléatoire
+      - key: JWT_REFRESH_SECRET
+        generateValue: true # Render génère un secret aléatoire
+      - key: JWT_ACCESS_EXPIRES_IN
+        value: 30d
+      - key: JWT_REFRESH_EXPIRES_IN
+        value: 30d
+      - key: UPLOAD_DIR
+        value: ./uploads
+      - key: CORS_ORIGIN
+        value: https://dagno-frontend.onrender.com # À ajuster après le déploiement du front
+      - key: IMGBB_API_KEY
+        sync: false # À remplir sur Render avec ta clé ImgBB
+
+  # ============================================
+  # 2. Frontend (React + Vite - Site Statique)
+  # ============================================
+  - type: web
+    name: dagno-frontend
+    runtime: static
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    # Permet à React Router de fonctionner (pas de page 404 sur /telephones par ex)
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        value: https://dagno-backend.onrender.com/api/v1 # À ajuster avec la vraie URL du backend
+      - key: VITE_UPLOADS_URL
+        value: ""
