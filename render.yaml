@@ -1,10 +1,6 @@
-  # ============================================
-  # 2. Frontend (React + Vite - Site Statique)
-  # ============================================
   - type: web
     name: dagno-frontend
     runtime: static
-    # plan: free  <-- SUPPRIME CETTE LIGNE
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
