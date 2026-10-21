@@ -25,15 +25,12 @@ async function uploadToImgBB(
     throw new AppError("Clé API ImgBB non configurée", 500);
   }
 
-  // Encoder l'image en base64
   const base64 = buffer.toString("base64");
 
-  // Construire le corps de la requête avec URLSearchParams
   const formData = new URLSearchParams();
   formData.append("image", base64);
   formData.append("name", filename);
 
-  // L'API ImgBB attend la clé API dans l'URL
   const response = await fetch(`${IMGBB_UPLOAD_URL}?key=${imgbbApiKey}`, {
     method: "POST",
     body: formData,
