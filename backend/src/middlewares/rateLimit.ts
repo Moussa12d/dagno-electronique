@@ -1,10 +1,8 @@
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import type { Request, Response, NextFunction } from "express";
 
-// Stockage en mémoire des IP bloquées : { ip: dateExpiration }
 const blockedIPs = new Map<string, number>();
 
-// Nettoyage périodique des IP expirées (toutes les minutes)
 setInterval(() => {
   const now = Date.now();
   for (const [ip, expiry] of blockedIPs.entries()) {
@@ -12,11 +10,8 @@ setInterval(() => {
   }
 }, 60 * 1000);
 
-// ============================================
-// Middleware qui bloque les IP déjà bloquées
-// ============================================
 export function checkBlocked(req: Request, res: Response, next: NextFunction) {
-  const ip = req.ip ?? "unknown";
+  const ip = ipKeyGenerator(req.ip ?? "unknown");
   const expiry = blockedIPs.get(ip);
 
   if (expiry && expiry > Date.now()) {
@@ -32,10 +27,6 @@ export function checkBlocked(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-// ============================================
-// Limiteur STRICT : 3 tentatives / minute
-// + blocage 5 minutes si dépassement
-// ============================================
 export const strictLimiter = rateLimit({
   windowMs: 60 * 1000,
   limit: 3,
@@ -45,10 +36,10 @@ export const strictLimiter = rateLimit({
   statusCode: 429,
   standardHeaders: "draft-7",
   legacyHeaders: false,
-  keyGenerator: (req) => req.ip ?? "unknown",
+  keyGenerator: (req) => ipKeyGenerator(req.ip ?? "unknown"),
   skipSuccessfulRequests: true,
   handler: (req, res, _next, _options) => {
-    const ip = req.ip ?? "unknown";
+    const ip = ipKeyGenerator(req.ip ?? "unknown");
     blockedIPs.set(ip, Date.now() + 5 * 60 * 1000);
     res.status(429).json({
       error: "Trop de tentatives. Veuillez réessayer dans 5 minutes.",
@@ -57,9 +48,6 @@ export const strictLimiter = rateLimit({
   },
 });
 
-// ============================================
-// Limiteur PUBLIC : 60 requêtes / minute
-// ============================================
 export const publicLimiter = rateLimit({
   windowMs: 60 * 1000,
   limit: 60,
@@ -69,5 +57,5 @@ export const publicLimiter = rateLimit({
   statusCode: 429,
   standardHeaders: "draft-7",
   legacyHeaders: false,
-  keyGenerator: (req) => req.ip ?? "unknown",
+  keyGenerator: (req) => ipKeyGenerator(req.ip ?? "unknown"),
 });
