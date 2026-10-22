@@ -50,8 +50,16 @@ export function ReparationPage() {
     e.preventDefault();
     setTrackError(null);
     setTracking(null);
+
+    // Vérification : le champ ne doit pas être vide
+    const cleanNumber = trackNumber.trim();
+    if (!cleanNumber) {
+      setTrackError("Veuillez saisir un numéro de ticket.");
+      return;
+    }
+
     try {
-      const { data } = await api.get(`/repairs/tickets/${trackNumber.trim()}`);
+      const { data } = await api.get(`/repairs/tickets/${cleanNumber}`);
       setTracking(data.data);
     } catch (err: any) {
       setTrackError(
@@ -238,6 +246,7 @@ export function ReparationPage() {
                 label="Numéro de ticket"
                 name="trackNumber"
                 placeholder="REP-2026-0001"
+                required
                 value={trackNumber}
                 onChange={(e) => setTrackNumber(e.target.value)}
               />
